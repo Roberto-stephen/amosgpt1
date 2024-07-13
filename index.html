@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="amosgpt.png">
     <title>Amos Engine</title>
     <style>
         body {
@@ -12,7 +13,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background: linear-gradient(135deg, #000428, #004e92);
+            background: linear-gradient(135deg, #000000, #000000);
             color: #fff;
         }
 
@@ -20,7 +21,7 @@
             background: #333;
             color: #fff;
             padding: 10px 20px;
-            text-align: center;
+            text-align: left; /* Align text to the left */
             font-size: 1.5em;
             font-weight: bold;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
@@ -28,6 +29,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 2; /* Ensure top bar stays on top */
         }
 
         .logout-button {
@@ -47,27 +49,34 @@
         .container {
             display: flex;
             flex-grow: 1;
+            overflow: hidden; /* Hide overflow to prevent sidebar content overflow */
         }
 
         .sidebar {
-            width: 300px;
+            width: 200px;
             background: linear-gradient(145deg, #333, #444);
             border-right: 1px solid #555;
-            padding: 20px;
+            padding: 5px;
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
             border-radius: 0 10px 10px 0;
+            flex-shrink: 0;
+            overflow-y: auto; /* Added for scroll */
+            z-index: 1; /* Ensure sidebar stays below top bar */
+            text-align: center; /* Center align text */
         }
 
         .sidebar-header {
             margin-bottom: 20px;
             font-size: 1.5em;
-            text-align: center;
+            text-align: center; /* Align text to the center */
             font-weight: bold;
+            color: #fff; /* Ensure text color is white */
         }
 
-        .new-chat {
+        .new-chat,
+        .whatsapp-button {
             background: linear-gradient(145deg, #10a37f, #12b486);
             color: white;
             border: none;
@@ -79,7 +88,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .new-chat:hover {
+        .new-chat:hover,
+        .whatsapp-button:hover {
             background: linear-gradient(145deg, #0e7c6a, #0f947d);
             transform: scale(1.05);
         }
@@ -108,16 +118,16 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px;
             background: #222;
-            border-radius: 10px 0 0 10px;
+            border-radius: 10px;
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+            overflow: hidden; /* Ensure content does not overflow */
         }
 
         .chat-area {
             flex-grow: 1;
             overflow-y: auto;
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
         .message {
@@ -149,33 +159,38 @@
         }
 
         .input-area {
-    display: flex;
-    align-items: center; /* Posisikan item secara vertikal di tengah */
-    margin-bottom: 20px; /* Jarak bawah antara input area dan chat area */
-}
+            display: flex;
+            border: 1px solid #444;
+            border-radius: 15px;
+            overflow: hidden;
+            position: sticky;
+            bottom: 0;
+            background-color: #222;
+            z-index: 2; /* Ensure input area stays on top */
+            padding: 10px 20px;
+        }
 
-.input-area textarea {
-    flex-grow: 1; /* Memperluas textarea sesuai kebutuhan */
-    border: none;
-    padding: 15px;
-    font-size: 16px;
-    resize: none;
-    background-color: #333;
-    color: #fff;
-    border-radius: 15px 0 0 15px; /* Bulatkan sudut kiri */
-}
+        .input-area textarea {
+            flex-grow: 1;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            resize: none;
+            background-color: #333;
+            color: #fff;
+            border-radius: 15px 0 0 15px;
+        }
 
-.input-area button {
-    background: linear-gradient(145deg, #10a37f, #12b486);
-    color: white;
-    border: none;
-    padding: 25px 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    border-radius: 0 15px 15px 0; /* Bulatkan sudut kanan */
-}
-
+        .input-area button {
+            background: linear-gradient(145deg, #10a37f, #12b486);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 0 15px 15px 0;
+        }
 
         .input-area button:hover {
             background: linear-gradient(145deg, #0e7c6a, #0f947d);
@@ -191,13 +206,46 @@
         }
 
         #loader img {
-            width: 50px;
+            width: 50px; /* Adjust the width of the loader image */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 3; /* Ensure footer stays above input area */
+        }
+
+        /* Media Query for Mobile Devices */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column-reverse; /* Stack sidebar below main content */
+            }
+
+            .sidebar {
+                width: 100%;
+                border-radius: 0;
+                border-bottom: 1px solid #555;
+            }
+
+            .main-content {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .input-area {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="top-bar">
-        Amos GPT
+        <div style="flex-grow: 1; text-align: left;">Amos GPT - Using Chat AI to Make Life More Easier</div>
         <button class="logout-button" onclick="logout()">Logout</button>
     </div>
     <div class="container">
@@ -206,25 +254,27 @@
             <button class="new-chat" onclick="resetChat()">New Chat</button>
             <div class="history">
             </div>
+            <a class="whatsapp-button" href="https://wa.me/+6287776834225" target="_blank">Try our Chat Bot via Whatsapp !</a>
         </div>
         <div class="main-content">
             <div class="chat-area" id="chat-history">
                 <div class="message ai-message">Hello! How can I assist you today?</div>
             </div>
             <div class="input-area">
-                <textarea id="user-input" placeholder="Type your message here..."></textarea>
-                <button id="send-button">Send</button>
+                <textarea id="user-input" rows="1" placeholder="Type your message here..."></textarea>
+                <button onclick="sendMessage()">Send</button>
             </div>
         </div>
     </div>
+    <footer>
+        &copy; Amos GPT 2024. All rights reserved.
+    </footer>
     <div id="loader">
         <img src="loader.gif" alt="Loading...">
     </div>
-
     <script>
         const chatHistory = document.getElementById('chat-history');
         const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
         const loader = document.getElementById('loader');
 
         function resetChat() {
@@ -232,47 +282,43 @@
         }
 
         async function sendMessage() {
-    const userMessage = userInput.value;
-    userInput.value = ''; // Clear input field
-    console.log(userMessage);
-    try {
-        const response = await fetch('/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userInput: userMessage }),
-        });
+            const userMessage = userInput.value;
+            if (userMessage.trim() === '') return; // Prevent sending empty messages
+            userInput.value = ''; // Clear input field
 
-        const data = await response.json();
-        console.log(data);
-        const botMessage = data.response;
-        console.log(botMessage);
-
-        // Add chat message to the chat history
-        chatHistory.innerHTML += `<div class="message user-message">${userMessage}</div>`;
-        chatHistory.innerHTML += `<div class="message ai-message">${botMessage}</div>`;
-
-        // Scroll to the bottom of the chat history
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-    } catch (error) {
-        console.error('Error:', error);
-        // Handle errors gracefully, e.g., display an error message to the user
-    }
-}
-
-        sendButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default button behavior
             loader.style.display = 'block'; // Show the loader
-            sendMessage().finally(() => {
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userInput: userMessage }),
+                });
+
+                const data = await response.json();
+                const botMessage = data.response;
+
+                // Add chat message to the chat history
+                chatHistory.innerHTML += `<div class="message user-message">${userMessage}</div>`;
+                chatHistory.innerHTML += `<div class="message ai-message">${botMessage}</div>`;
+
+                // Scroll to the bottom of the chat history
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
                 loader.style.display = 'none'; // Hide the loader after the message is sent
-            });
-        });
+            }
+        }
+
+        document.querySelector('button[onclick="sendMessage()"]').addEventListener('click', sendMessage);
 
         userInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault(); // Prevent default Enter key behavior
-                sendButton.click(); // Trigger the send button click
+                sendMessage(); // Trigger the send button click
             }
         });
 
