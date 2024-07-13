@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodies
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 const MODEL_NAME = "gemini-pro";
 const API_KEY = process.env.API_KEY;
 
